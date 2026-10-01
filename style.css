@@ -1,0 +1,325 @@
+/* ================= ALEV — ateşli portfolyo (animasyonlu) ================= */
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+
+:root{
+  --bg:#0b0705;
+  --bg2:#140c07;
+  --ink:#f7ead9;
+  --muted:#a58f79;
+  --fire1:#ff2d00;
+  --fire2:#ff8a00;
+  --fire3:#ffd447;
+  --line:rgba(255,140,40,.18);
+  --card:rgba(30,17,10,.72);
+  --shadow:0 20px 60px rgba(0,0,0,.55);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #2a1408 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 110%, #26100a 0%, transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+::selection{background:var(--fire1);color:#fff}
+:focus-visible{outline:2px solid var(--fire3);outline-offset:3px;border-radius:6px}
+
+/* yavaşça gezinen sıcak ışık lekeleri */
+body::before{
+  content:"";position:fixed;inset:-20%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(40% 35% at 20% 30%, rgba(255,90,0,.13), transparent 70%),
+    radial-gradient(35% 30% at 80% 60%, rgba(255,170,0,.10), transparent 70%),
+    radial-gradient(30% 30% at 50% 90%, rgba(255,45,0,.12), transparent 70%);
+  animation:drift 18s ease-in-out infinite alternate;
+}
+@keyframes drift{
+  0%{transform:translate3d(-3%,-2%,0) scale(1)}
+  50%{transform:translate3d(4%,3%,0) scale(1.08)}
+  100%{transform:translate3d(-2%,5%,0) scale(1.02)}
+}
+
+/* ---------- katmanlar ---------- */
+#fire-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.flame-floor{
+  position:fixed;left:0;right:0;bottom:0;height:26vh;z-index:2;pointer-events:none;
+  background:linear-gradient(to top, rgba(255,90,0,.35), rgba(255,140,0,.10) 45%, transparent 80%);
+  mix-blend-mode:screen;transform-origin:bottom;
+  animation:flicker 2.6s ease-in-out infinite alternate;
+}
+@keyframes flicker{
+  0%{opacity:.55;transform:scaleY(.94)}
+  35%{opacity:.85;transform:scaleY(1.06)}
+  60%{opacity:.62;transform:scaleY(.97)}
+  100%{opacity:.9;transform:scaleY(1.04)}
+}
+.vignette{position:fixed;inset:0;z-index:3;pointer-events:none;
+  box-shadow:inset 0 0 220px 60px rgba(0,0,0,.85);
+  animation:breathe 5s ease-in-out infinite alternate}
+@keyframes breathe{from{box-shadow:inset 0 0 220px 60px rgba(0,0,0,.85)}
+  to{box-shadow:inset 0 0 200px 40px rgba(40,10,0,.78)}}
+
+/* ---------- nav ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px clamp(18px,5vw,54px);
+  background:linear-gradient(to bottom, rgba(11,7,5,.92), rgba(11,7,5,.35) 70%, transparent);
+  backdrop-filter:blur(6px);
+  animation:navIn .9s var(--ease) both .2s;
+}
+@keyframes navIn{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;
+  color:var(--ink);text-decoration:none;display:flex;gap:8px;align-items:center}
+.logo span{background:linear-gradient(90deg,var(--fire3),var(--fire2),var(--fire1),var(--fire2),var(--fire3));
+  background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:slide 4s linear infinite}
+@keyframes slide{to{background-position:200% 0}}
+.nav-links{display:flex;gap:clamp(12px,2.5vw,30px)}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;letter-spacing:.5px;
+  transition:.25s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--fire3);text-shadow:0 0 16px rgba(255,170,0,.5)}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;
+  background:linear-gradient(90deg,var(--fire2),var(--fire1));transition:.3s;
+  box-shadow:0 0 10px rgba(255,100,0,.8)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.music-mini{background:none;border:1px solid var(--line);border-radius:999px;
+  padding:6px 10px;cursor:pointer;font-size:15px;transition:.25s}
+.music-mini:hover{border-color:var(--fire2);box-shadow:0 0 18px rgba(255,138,0,.35);transform:scale(1.1) rotate(-6deg)}
+
+/* ---------- intro ---------- */
+.intro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;
+  background:radial-gradient(800px 500px at 50% 60%, #2a0f05 0%, rgba(6,4,3,.96) 70%);
+  transition:opacity .7s ease, visibility .7s}
+.intro::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(500px 300px at 50% 70%, rgba(255,90,0,.25), transparent 70%);
+  animation:flicker 2.2s ease-in-out infinite alternate}
+.intro.hidden{opacity:0;visibility:hidden}
+.intro.hidden .intro-card{transform:scale(1.08);transition:transform .7s ease}
+.intro-card{position:relative;text-align:center;padding:40px 30px;max-width:520px;
+  animation:cardIn 1s var(--ease) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
+.intro-flame{font-size:64px;animation:flameBob 1.6s ease-in-out infinite alternate;
+  filter:drop-shadow(0 0 26px rgba(255,120,0,.8))}
+@keyframes flameBob{from{transform:translateY(0) rotate(-4deg) scale(1)}to{transform:translateY(-12px) rotate(4deg) scale(1.08)}}
+.intro-kicker{letter-spacing:6px;color:var(--muted);font-size:12px;margin-top:14px;
+  animation:kick 1.4s var(--ease) both .3s}
+@keyframes kick{from{letter-spacing:18px;opacity:0}to{letter-spacing:6px;opacity:1}}
+.intro-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,11vw,96px);
+  line-height:.95;margin:8px 0 14px;
+  background:linear-gradient(180deg,#fff3c4 0%,var(--fire3) 35%,var(--fire2) 65%,var(--fire1) 100%);
+  background-size:100% 200%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 26px rgba(255,80,0,.45));
+  animation:heat 3s ease-in-out infinite alternate, glowPulse 2.4s ease-in-out infinite alternate}
+.intro-sub{color:var(--muted);margin-bottom:26px;line-height:1.6}
+.intro-note{margin-top:18px;font-size:12px;color:#7d6a58}
+.intro-note code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;color:var(--fire3)}
+@keyframes glowPulse{
+  from{filter:drop-shadow(0 6px 22px rgba(255,80,0,.35))}
+  to{filter:drop-shadow(0 8px 40px rgba(255,120,0,.75))}}
+
+/* ---------- butonlar ---------- */
+.btn{display:inline-block;text-decoration:none;cursor:pointer;border:none;
+  font-family:'Bebas Neue',sans-serif;letter-spacing:2.5px;font-size:17px;
+  padding:14px 30px;border-radius:999px;transition:.3s;position:relative;overflow:hidden}
+.btn::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-20deg);animation:shine 3.6s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-80%}100%{left:140%}}
+.btn-fire{color:#1a0c04;background:linear-gradient(135deg,var(--fire3),var(--fire2) 55%,var(--fire1));
+  background-size:200% 200%;
+  box-shadow:0 10px 34px rgba(255,90,0,.42), 0 0 0 1px rgba(255,255,255,.15) inset;
+  animation:btnGlow 2.2s ease-in-out infinite alternate}
+@keyframes btnGlow{
+  from{box-shadow:0 10px 30px rgba(255,90,0,.35), 0 0 0 1px rgba(255,255,255,.15) inset;background-position:0% 50%}
+  to{box-shadow:0 14px 48px rgba(255,110,0,.65), 0 0 0 1px rgba(255,255,255,.25) inset;background-position:100% 50%}}
+.btn-fire:hover{transform:translateY(-3px) scale(1.04);
+  box-shadow:0 16px 44px rgba(255,90,0,.6), 0 0 34px rgba(255,170,0,.55)}
+.btn-fire:active{transform:translateY(0) scale(.98)}
+.btn-ghost{color:var(--ink);border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.btn-ghost::after{animation-delay:1.2s;opacity:.5}
+.btn-ghost:hover{border-color:var(--fire2);color:var(--fire3);
+  box-shadow:0 0 26px rgba(255,138,0,.3), inset 0 0 22px rgba(255,120,0,.12);transform:translateY(-3px)}
+.btn.big{font-size:24px;padding:18px 40px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:120px clamp(18px,5vw,50px) 90px}
+.hero-kicker{letter-spacing:7px;color:var(--fire2);font-size:13px;font-weight:600;
+  animation:kick2 1.8s var(--ease) both .4s}
+@keyframes kick2{from{letter-spacing:22px}to{letter-spacing:7px}}
+.hero-title{font-family:'Bebas Neue',sans-serif;line-height:.92;margin:18px 0 22px}
+.hero-title .line{display:block;font-size:clamp(48px,10.5vw,138px);letter-spacing:2px}
+.hero-title .line:first-child{color:#fff2d8;text-shadow:0 0 40px rgba(255,160,60,.25);
+  animation:textGlow 3s ease-in-out infinite alternate}
+@keyframes textGlow{
+  from{text-shadow:0 0 30px rgba(255,160,60,.18)}
+  to{text-shadow:0 0 60px rgba(255,140,40,.5), 0 0 120px rgba(255,80,0,.25)}}
+.fire-text{
+  background:linear-gradient(180deg,#fff6cf 0%,var(--fire3) 30%,var(--fire2) 60%,var(--fire1) 92%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:100% 200%;
+  animation:heat 3.2s ease-in-out infinite alternate, fireFlick 1.7s ease-in-out infinite alternate;
+  filter:drop-shadow(0 8px 34px rgba(255,80,0,.5))}
+@keyframes heat{from{background-position:50% 0%}to{background-position:50% 100%}}
+@keyframes fireFlick{
+  0%{filter:drop-shadow(0 8px 28px rgba(255,80,0,.4))}
+  30%{filter:drop-shadow(0 10px 44px rgba(255,110,0,.7))}
+  60%{filter:drop-shadow(0 6px 30px rgba(255,70,0,.45))}
+  100%{filter:drop-shadow(0 12px 52px rgba(255,130,0,.75))}}
+.hero-sub{max-width:620px;color:var(--muted);font-size:clamp(15px,1.7vw,19px);line-height:1.75}
+.hero-sub strong{color:var(--ink);text-shadow:0 0 18px rgba(255,150,40,.4)}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:34px 0 46px}
+.hero-stats{display:flex;gap:clamp(22px,5vw,64px);flex-wrap:wrap;justify-content:center}
+.hero-stats div{display:flex;flex-direction:column;gap:4px;transition:transform .35s var(--ease)}
+.hero-stats div:hover{transform:translateY(-6px) scale(1.06)}
+.hero-stats b{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--fire3);
+  text-shadow:0 0 22px rgba(255,180,0,.45);animation:statGlow 2.6s ease-in-out infinite alternate}
+.hero-stats div:nth-child(2) b{animation-delay:.5s}
+.hero-stats div:nth-child(3) b{animation-delay:1s}
+@keyframes statGlow{
+  from{text-shadow:0 0 14px rgba(255,180,0,.25)}
+  to{text-shadow:0 0 30px rgba(255,170,0,.75), 0 0 60px rgba(255,90,0,.35)}}
+.hero-stats span{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.scroll-hint{position:absolute;bottom:26px;font-size:11px;letter-spacing:4px;color:#7d6a58;
+  animation:hint 1.8s ease-in-out infinite}
+@keyframes hint{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(7px);opacity:1}}
+
+/* ---------- bölümler ---------- */
+.section{position:relative;z-index:10;max-width:1120px;margin:0 auto;
+  padding:clamp(70px,10vw,120px) clamp(18px,5vw,40px)}
+.section-title{position:relative;font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,54px);
+  letter-spacing:3px;margin-bottom:44px;display:flex;align-items:center;gap:16px}
+.section-title::after{content:"";position:absolute;left:0;bottom:-14px;height:2px;width:0;
+  background:linear-gradient(90deg,var(--fire1),var(--fire2),var(--fire3),transparent);
+  box-shadow:0 0 14px rgba(255,120,0,.7);transition:width 1.3s var(--ease) .3s}
+.section-title.in::after{width:min(100%,420px)}
+.section-title span{font-size:16px;color:var(--fire1);letter-spacing:2px;
+  border:1px solid var(--line);padding:4px 10px;border-radius:8px;
+  animation:tagPulse 2.8s ease-in-out infinite alternate}
+@keyframes tagPulse{
+  from{box-shadow:0 0 0 rgba(255,45,0,0);border-color:var(--line)}
+  to{box-shadow:0 0 18px rgba(255,45,0,.4);border-color:rgba(255,90,0,.55)}}
+
+/* hakkımda */
+.about-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:36px}
+.about-text p{color:var(--muted);line-height:1.85;margin-bottom:18px;font-size:16.5px}
+.about-list{list-style:none;margin-top:22px;display:grid;gap:12px}
+.about-list li{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:13px 16px;transition:.35s var(--ease)}
+.about-list li::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(to bottom,var(--fire3),var(--fire1));
+  transform:scaleY(0);transform-origin:bottom;transition:transform .35s var(--ease)}
+.about-list li:hover{border-color:var(--fire2);transform:translateX(10px);
+  box-shadow:-6px 0 24px rgba(255,120,0,.22)}
+.about-list li:hover::before{transform:scaleY(1)}
+.about-card{background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:32px 26px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:box-shadow .4s, transform .4s var(--ease)}
+.about-card:hover{box-shadow:0 24px 70px rgba(255,80,0,.25);transform:translateY(-6px)}
+/* dönen ateş çerçeve */
+.about-card::before{content:"";position:absolute;inset:-2px;border-radius:22px;padding:1.5px;
+  background:conic-gradient(from var(--ang),var(--fire1),transparent 25%,transparent 55%,var(--fire3),transparent 80%,var(--fire1));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.9;
+  animation:spin 6s linear infinite;pointer-events:none}
+@keyframes spin{to{--ang:360deg}}
+.avatar{position:relative;font-size:64px;background:radial-gradient(circle at 50% 30%,#3a1a08,#170c06);
+  width:110px;height:110px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px;
+  border:1px solid var(--line);box-shadow:0 0 44px rgba(255,120,0,.35);
+  animation:float 4s ease-in-out infinite alternate}
+.avatar::after{content:"";position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(255,140,40,.4);animation:ring 2.8s ease-out infinite}
+.avatar img{width:68%;height:68%;object-fit:contain}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-9px)}}
+@keyframes ring{from{transform:scale(.92);opacity:.9}to{transform:scale(1.35);opacity:0}}
+.about-card h3{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px}
+.muted{color:var(--muted);font-size:14px;margin-top:4px}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.chip{font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--fire3);
+  border:1px solid var(--line);padding:5px 11px;border-radius:999px;background:rgba(255,140,0,.07);
+  transition:.3s var(--ease)}
+.chip:hover{background:rgba(255,140,0,.2);border-color:var(--fire2);transform:translateY(-3px);
+  box-shadow:0 6px 18px rgba(255,100,0,.3)}
+
+/* yetenekler */
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px 40px}
+.skill label{display:block;font-size:13.5px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;transition:color .3s}
+.skill:hover label{color:var(--fire3)}
+.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;
+  border:1px solid var(--line)}
+.bar i{position:relative;display:block;height:100%;width:0;border-radius:999px;overflow:hidden;
+  background:linear-gradient(90deg,var(--fire1),var(--fire2) 60%,var(--fire3));
+  box-shadow:0 0 16px rgba(255,130,0,.7);transition:width 1.4s var(--ease)}
+.bar i::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:40%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:barShine 2.4s ease-in-out infinite}
+@keyframes barShine{0%{left:-40%}100%{left:120%}}
+
+/* iletişim */
+.contact{text-align:center}
+.contact-lead{color:var(--muted);font-size:18px;margin-bottom:30px}
+.socials{display:flex;gap:26px;justify-content:center;margin-top:34px;flex-wrap:wrap}
+.socials a{color:var(--muted);text-decoration:none;font-size:13px;letter-spacing:2.5px;
+  text-transform:uppercase;transition:.25s;border-bottom:1px solid transparent;padding-bottom:4px}
+.socials a:hover{color:var(--fire3);border-color:var(--fire2);letter-spacing:4px;
+  text-shadow:0 0 18px rgba(255,170,0,.6)}
+
+footer{position:relative;z-index:10;text-align:center;padding:40px 20px 110px;
+  color:#6f5d4d;font-size:13px;border-top:1px solid var(--line)}
+footer::before{content:"";position:absolute;top:-1px;left:0;height:1px;width:30%;
+  background:linear-gradient(90deg,transparent,var(--fire2),transparent);
+  animation:sweep 5s ease-in-out infinite alternate}
+@keyframes sweep{from{left:0}to{left:70%}}
+
+/* ---------- müzik oynatıcı ---------- */
+.player{position:fixed;left:18px;bottom:18px;z-index:50;display:flex;align-items:center;gap:12px;
+  background:rgba(18,10,6,.9);border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px 8px 8px;backdrop-filter:blur(8px);box-shadow:var(--shadow);
+  transition:.5s var(--ease);transform:translateY(120px);opacity:0}
+.player.show{transform:translateY(0);opacity:1}
+.player:hover{border-color:rgba(255,150,40,.5);box-shadow:0 0 30px rgba(255,110,0,.3)}
+.player.playing{border-color:rgba(255,130,30,.45);animation:playerGlow 2s ease-in-out infinite alternate}
+@keyframes playerGlow{from{box-shadow:0 0 12px rgba(255,100,0,.15)}to{box-shadow:0 0 34px rgba(255,110,0,.45)}}
+.player-btn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;font-size:16px;
+  background:linear-gradient(135deg,var(--fire3),var(--fire2),var(--fire1));color:#1a0c04;
+  transition:.25s;flex:none}
+.player.playing .player-btn{animation:beatBtn 1.2s ease-in-out infinite}
+@keyframes beatBtn{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.player-btn:hover{transform:scale(1.12);box-shadow:0 0 22px rgba(255,140,0,.7)}
+.player-info{display:flex;flex-direction:column;line-height:1.25}
+.player-title{font-size:13px;font-weight:600;letter-spacing:.5px}
+.player-state{font-size:11px;color:var(--muted);letter-spacing:1px}
+.eq{display:flex;align-items:flex-end;gap:3px;height:22px}
+.eq i{width:4px;height:5px;border-radius:2px;background:linear-gradient(to top,var(--fire1),var(--fire3));
+  transition:height .2s}
+.player.playing .eq i{animation:eq .9s ease-in-out infinite alternate}
+.player.playing .eq i:nth-child(2){animation-delay:.15s}
+.player.playing .eq i:nth-child(3){animation-delay:.3s}
+.player.playing .eq i:nth-child(4){animation-delay:.45s}
+@keyframes eq{from{height:4px}to{height:22px}}
+
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(34px) scale(.97);
+  transition:opacity .9s ease,transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- responsive ---------- */
+@media(max-width:820px){
+  .about-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .player{left:12px;right:12px;bottom:12px;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .reveal{opacity:1;transform:none}
+}

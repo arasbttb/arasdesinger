@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALEV — Ateşli Portfolyo</title>
+  <meta name="description" content="Her yerden kıvılcım fışkıran, ateşe duyarlı portfolyo sitesi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>" />
+</head>
+<body>
+
+  <!-- Ateş parçacık katmanı -->
+  <canvas id="fire-canvas" aria-hidden="true"></canvas>
+  <div class="flame-floor" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- Giriş / başlatma ekranı (tarayıcı ses izni için) -->
+  <div id="intro" class="intro">
+    <div class="intro-card">
+      <div class="intro-flame">🔥</div>
+      <p class="intro-kicker">HOŞ GELDİN</p>
+      <h1 class="intro-title">Ar3s.wtf</h1>
+      
+      <button id="start-btn" class="btn btn-fire">▶ Şarkıyı başlat</button>
+      <p class="intro-note">Gozun kalır , izler kalırsın </p>
+    </div>
+  </div>
+
+  <!-- Navigasyon -->
+  <nav class="nav">
+    <a href="#home" class="logo">🔥<span>PORTFOLYO</span></a>
+    <div class="nav-links">
+      <a href="#about">Hakkımda</a>
+      
+      <a href="#contact">İletişim</a>
+    </div>
+    <button id="nav-music" class="music-mini" title="Müzik aç/kapat">🔇</button>
+  </nav>
+
+  <!-- HERO -->
+  <header id="home" class="hero">
+    <p class="hero-kicker reveal">Desinger &amp; Programcı</p>
+    <h1 class="hero-title">
+      <span class="line reveal">Programmer</span>
+      <span class="line fire-text reveal">Desinger</span>
+    </h1>
+    <p class="hero-sub reveal">
+      Ben <strong>Ar3s.wtf</strong> — hile , cheats , vibe coder , web sites ,
+    </p>
+    <div class="hero-actions reveal">
+      <a href="#contact" class="btn btn-ghost">BENİMLE ÇALIŞ</a>
+    </div>
+    <div class="hero-stats reveal">
+      <div><b>Python</b><span>Python</span></div>
+      <div><b>C++</b><span>c++</span></div>
+      <div><b>JavaScript</b><span>Web</span></div>
+    </div>
+    <div class="scroll-hint">Scroll down ↓</div>
+  </header>
+
+  <!-- HAKKIMDA -->
+  <section id="about" class="section">
+    <h2 class="section-title reveal"><span>01</span> HAKKIMDA</h2>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          Şu anda c++ ve guiler üzerine duruyorum.
+        </p>
+        <p>
+          Benimle iletişime geçmek için discord gelebilirsiniz
+        </p>
+        <ul class="about-list">
+          <li>⚡ Python</li>
+          <li>🎨 c++</li>
+          <li>💻 Web Sitesi Tasarımı</li>
+        </ul>
+      </div>
+      <div class="about-card reveal">
+        <div class="avatar">
+          <img src="https://www.logo.wine/a/logo/C%2B%2B/C%2B%2B-Logo.wine.svg" alt="C++ logo" />
+        </div>
+        <h3>Ar3s.wtf</h3>
+        <p class="muted">TSS</p>
+        <div class="chip-row">
+          <span class="chip">UI/UX</span><span class="chip">Web</span>
+          <span class="chip">Mobil</span><span class="chip">3B</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <!-- YETENEKLER -->
+  <section id="skills" class="section">
+    <h2 class="section-title reveal"><span>03</span> skills</h2>
+    <div class="skill-grid">
+      <div class="skill reveal" data-level="95"><label>HTML / CSS</label><div class="bar"><i></i></div></div>
+      <div class="skill reveal" data-level="90"><label>JavaScript / TypeScript</label><div class="bar"><i></i></div></div>
+      <div class="skill reveal" data-level="85"><label>React &amp; Next.js</label><div class="bar"><i></i></div></div>
+      <div class="skill reveal" data-level="80"><label>Animasyon &amp; WebGL</label><div class="bar"><i></i></div></div>
+      <div class="skill reveal" data-level="75"><label>UI Tasarımı</label><div class="bar"><i></i></div></div>
+      <div class="skill reveal" data-level="70"><label>Backend / API</label><div class="bar"><i></i></div></div>
+    </div>
+  </section>
+
+  <!-- İLETİŞİM -->
+  <section id="contact" class="section contact">
+    <h2 class="section-title reveal"><span>04</span> İLETİŞİM</h2>
+    <p class="contact-lead reveal">bir sorunun mu var? </p>
+    <a href="mailto:merhaba@ornek.com" class="btn btn-fire big reveal">Dc:arasbt</a>
+    <div class="socials reveal">
+      <a href="https://github.com/arasbttb">GitHub</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© <span id="year"></span> Ar3s.wtf </p>
+  </footer>
+
+  <!-- Müzik oynatıcı -->
+  <div class="player" id="player">
+    <button id="play-btn" class="player-btn" title="Şarkıyı aç/kapat">🔇</button>
+    <div class="player-info">
+      <span class="player-state" id="player-state">duraklatıldı</span>
+    </div>
+    <div class="eq" id="eq"><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <!-- Arka plan müziği -->
+  <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
+    <source src="music/tss.m4a" type="audio/mp4" />
+  </audio>
+
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      const audio = document.getElementById('bg-music');
+      const startBtn = document.getElementById('start-btn');
+      const playBtn = document.getElementById('play-btn');
+      const navMusic = document.getElementById('nav-music');
+      const playerState = document.getElementById('player-state');
+
+      function updateUi(isPlaying) {
+        const btns = [playBtn, navMusic].filter(Boolean);
+        btns.forEach((btn) => {
+          if (!btn) return;
+          btn.textContent = isPlaying ? '🔊' : '🔇';
+          btn.setAttribute('aria-pressed', String(isPlaying));
+        });
+
+        if (playerState) {
+          playerState.textContent = isPlaying ? 'çalıyor' : 'duraklatıldı';
+        }
+      }
+
+      async function toggleMusic() {
+        if (!audio) return;
+
+        try {
+          if (audio.paused) {
+            await audio.play();
+            updateUi(true);
+          } else {
+            audio.pause();
+            updateUi(false);
+          }
+        } catch (error) {
+          console.warn('Müzik başlatılamadı:', error);
+          updateUi(false);
+        }
+      }
+
+      [startBtn, playBtn, navMusic].forEach((button) => {
+        if (!button) return;
+        button.addEventListener('click', async () => {
+          await toggleMusic();
+        });
+      });
+
+      audio.addEventListener('play', () => updateUi(true));
+      audio.addEventListener('pause', () => updateUi(false));
+      audio.addEventListener('ended', () => updateUi(false));
+
+      updateUi(false);
+    })();
+  </script>
+</body>
+</html>
